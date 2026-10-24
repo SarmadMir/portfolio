@@ -1,72 +1,158 @@
-@import "tailwindcss";
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
-  --color-accent-muted: var(--accent-muted);
-  --color-surface: var(--surface);
-  --color-surface-elevated: var(--surface-elevated);
-  --color-border: var(--border-color);
-  --color-muted: var(--muted);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* sarmadmir.dev holding page. System font stack, prefers-color-scheme, no JS theming. */
 
 :root {
-  --background: #f8f9fa;
-  --foreground: #1a1a2e;
-  --accent: #6c63ff;
-  --accent-muted: #6c63ff26;
-  --surface: #ffffff;
-  --surface-elevated: #f0f0f5;
-  --border-color: #e2e2e8;
-  --muted: #6b7280;
+  color-scheme: light dark;
+  --bg: #fafafa;
+  --fg: #16161a;
+  --muted: #5c5c66;
+  --accent: #5b53e6;
+  --font-sans:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
-.dark {
-  --background: #0a0a0f;
-  --foreground: #e8e8ed;
-  --accent: #7c73ff;
-  --accent-muted: #7c73ff1a;
-  --surface: #111118;
-  --surface-elevated: #1c1c2a;
-  --border-color: #2a2a3a;
-  --muted: #8b8b9e;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0b0f;
+    --fg: #ececf1;
+    --muted: #9c9cab;
+    --accent: #8f88ff;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans, system-ui, sans-serif);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
+.main,
+.footer {
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+  padding-inline: 1.5rem;
 }
 
-/* Selection styling */
-::selection {
-  background-color: var(--accent);
-  color: white;
+.main {
+  align-self: center;
+  padding-block: 4rem;
 }
 
-/* Scrollbar styling for dark mode */
-.dark ::-webkit-scrollbar {
-  width: 8px;
+.footer {
+  padding-block: 1.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: var(--surface);
+.footer p {
+  margin: 0;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
+.wordmark {
+  display: inline-block;
+  margin: 0 0 3rem;
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  text-decoration: none;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+.wordmark-accent {
+  color: var(--accent);
+}
+
+.name {
+  margin: 0;
+  font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.role {
+  margin: 0.5rem 0 0;
+  font-size: 1.125rem;
+  color: var(--muted);
+}
+
+.links {
+  margin-top: 3rem;
+}
+
+.links ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--fg);
+  text-decoration: underline;
+  text-decoration-color: var(--muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.links a:hover {
+  text-decoration-color: var(--accent);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (min-width: 30rem) {
+  .links ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 2rem;
+    row-gap: 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .main,
+  .footer {
+    animation: fade-in 200ms ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }

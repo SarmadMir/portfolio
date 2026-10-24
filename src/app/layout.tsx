@@ -1,47 +1,35 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import { Navigation } from "@/components/layout/Navigation";
-import { Footer } from "@/components/layout/Footer";
+import type { Metadata, Viewport } from "next";
+import { site } from "@/config/site";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: {
-    default: "Sarmad Mir — Software Engineer",
-    template: "%s | Sarmad Mir",
+    default: site.name,
+    template: `%s · ${site.name}`,
   },
-  description:
-    "Software engineer & creative problem solver. Building tools that matter — from Chrome extensions to PDF generation systems.",
-  metadataBase: new URL("https://sarmadmir.dev"),
+  description: site.description,
   openGraph: {
-    title: "Sarmad Mir — Software Engineer",
-    description:
-      "Software engineer & creative problem solver. Building tools that matter.",
-    url: "https://sarmadmir.dev",
-    siteName: "Sarmad Mir",
+    title: site.name,
+    description: site.description,
+    url: site.url,
+    siteName: site.name,
     locale: "en_US",
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Sarmad Mir — Software Engineer",
-    description:
-      "Software engineer & creative problem solver. Building tools that matter.",
+    card: "summary",
+    title: site.name,
+    description: site.description,
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0b0f" },
+  ],
 };
 
 export default function RootLayout({
@@ -50,17 +38,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
-      suppressHydrationWarning
-    >
-      <body className="min-h-screen flex flex-col antialiased">
-        <ThemeProvider>
-          <Navigation />
-          <main className="flex-1 pt-16">{children}</main>
-          <Footer />
-        </ThemeProvider>
+    <html lang="en">
+      <body>
+        {children}
+        <footer className="footer">
+          <p>{site.footer}</p>
+        </footer>
       </body>
     </html>
   );

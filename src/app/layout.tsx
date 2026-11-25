@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { site } from "@/config/site";
+import { themeInitScript } from "@/lib/theme/theme";
 import { fontVariables } from "@/styles/fonts";
 import "./globals.css";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -14,8 +16,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${fontVariables} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    // suppressHydrationWarning: the script below sets data-theme before React hydrates.
+    <html lang="en" className={`${fontVariables} antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body>
+        <Providers>
+          {/* Page content sits at z-desktop, above the shared canvas at z-field. */}
+          <div className="relative z-(--z-desktop) flex min-h-dvh flex-col">{children}</div>
+        </Providers>
+      </body>
     </html>
   );
 }

@@ -1,11 +1,11 @@
+import { THEMES, type ThemeId } from "@/lib/theme/theme";
 import tokensJson from "@/styles/tokens.json";
 
 /**
  * Typed, validated view of src/styles/tokens.json (the Sarmad OS design system).
- * The first theme is the default: it is the one :root carries.
+ * Theme ids come from src/lib/theme; the first one is the default :root carries.
  */
-export const THEMES = ["dark", "light"] as const;
-export type ThemeId = (typeof THEMES)[number];
+export { THEMES, type ThemeId };
 
 export const FONT_FAMILIES = ["display", "text", "mono"] as const;
 export type FontFamilyId = (typeof FONT_FAMILIES)[number];

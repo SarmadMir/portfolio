@@ -1,0 +1,6 @@
+<!-- Placeholder mark for /lab/cube: a bold geometric SM, one path. Replace this file with the real mark.
+     The viewBox is the whole front face of the cube, so the padding here is the mark's margin on the stone.
+     Keep it one path and colourless: the cube carves it as a bevel. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <path d="M21 27H53V40H28V53.5H53V87L47 93H15V80H40V66.5H15V33ZM61 93V33L67 27H74L83 58L92 27H99L105 33V93H92V47L83 78L74 47V93Z"/>
+</svg>

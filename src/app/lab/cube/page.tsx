@@ -1,6 +1,12 @@
 "use client";
 
-/** Lab slot for the boot loader. Title only: the prototype is built here next. */
+import { CubeLab } from "./CubeLab";
+
+/**
+ * Lab: the boot cube. A prototype to judge in the browser, not production.
+ * It answers three questions: does the solve read as motion graphics, does
+ * the dolly feel like the Netflix N, does the landing feel seamless.
+ */
 export default function CubeSlot() {
-  return <h1 className="font-display text-title-1">Cube</h1>;
+  return <CubeLab title={<h1 className="font-display text-title-3 text-ink">Cube</h1>} />;
 }

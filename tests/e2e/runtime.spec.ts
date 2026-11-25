@@ -106,8 +106,8 @@ test.describe("lab", () => {
     await expect(page.getByRole("listitem").getByRole("link")).toHaveText(["Cube", "Field", "Lens", "Fold"]);
   });
 
+  // The cube slot holds the boot prototype; tests/e2e/lab-cube.spec.ts covers it.
   for (const [slug, title] of [
-    ["cube", "Cube"],
     ["field", "Field"],
     ["lens", "Lens"],
     ["fold", "Fold"],

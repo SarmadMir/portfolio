@@ -2,9 +2,61 @@
 
 # sarmadmir.dev — v2 (branch `v2`)
 
-The full portfolio. `main` is the holding page and stays untouched until M1 replaces it.
-Read `../command-center/PORTFOLIO_BRIEF.md` first; its stack (§7), budgets (§9) and process (§10) are binding.
+The full portfolio. `main` is the holding page that production serves; it stays untouched until M1 replaces it.
+Read `../command-center/PORTFOLIO_BRIEF.md` first. Its stack (§7), budgets (§9) and process (§10) are binding.
+This branch is the scaffold: runtime and gates. No sections, no components beyond providers.
+
+## Map
+- `src/styles/tokens.json` → `npm run tokens` → `src/styles/tokens.css`. Generated, never hand-edited; see `src/styles/README.md`. Model and renderer: `src/lib/tokens/`.
+- `src/styles/fonts.ts`: next/font sets `--font-display`, `--font-text`, `--font-mono` on `<html>`.
+- `src/lib/motion/`: `gsap.ts` (gsap, ScrollTrigger, useGSAP), `flip.ts` / `split-text.ts` / `draw-svg.ts` / `morph-svg.ts` (opt-in plugins, registered on import), `SmoothScroll.tsx` (the one Lenis, `useLenis()`), `useReducedMotion.ts`.
+- `src/lib/three/`: `CanvasHost.tsx` (the one WebGL context, `useSharedCanvas()`), `SharedCanvas.tsx` (the only `<Canvas>`), `host-state.ts` (its pure state).
+- `src/lib/theme/`: `ThemeProvider.tsx` (`useTheme()`), `theme.ts` (rules and the inline bootstrap).
+- `src/app/providers.tsx` composes the three providers. `src/app/page.tsx` is the dev home (token swatches, type scale). `src/app/lab/` holds the prototype slots: cube, field, lens, fold.
+
+## Rules
+- System values only. The colour, font, text, radius and ease namespaces of Tailwind are reset, so `bg-red-500`, `text-sm`, `rounded-2xl`, `ease-in-out` do not exist. Use `bg-ground`, `text-ink-2`, `text-title-1`, `rounded-lg`, `ease-spring`, `t-fast`. Spacing is N × 4px.
+- Theming is `data-theme` on `<html>`; it also works on any nested element. Never hard-code a colour.
+- One scroll runtime: import GSAP only from `@/lib/motion/*`; never import `lenis` or native-smooth-scroll anything. ESLint enforces it. No anime.js, Barba or Rellax.
+- One WebGL context per page: never render `<Canvas>`. A scene registers its element and renders through drei's `<View>`:
+
+  ```tsx
+  "use client";
+  import { View } from "@react-three/drei";
+  import { useRef, type Ref } from "react";
+  import { useSharedCanvas } from "@/lib/three/CanvasHost";
+
+  export function Scene() {
+    const ref = useRef<HTMLElement>(null);
+    useSharedCanvas(ref, "always"); // "demand": render only when invalidated
+    return (
+      <View ref={ref as Ref<HTMLElement>} className="size-80">
+        {/* camera, lights, meshes */}
+      </View>
+    );
+  }
+  ```
+
+  The canvas is fixed at `z-field`, behind the page: a scene shows wherever the DOM above it is transparent. It loads when a scene nears the viewport and renders no frames while none is in view.
+- Every moving thing branches on `useReducedMotion()` to its static state.
+- Write the standard `backdrop-filter` only.
+- Copy: facts only, no emoji. Pending content is `[placeholder]`.
+
+## Gotchas
+- `cacheComponents` is on. Routes you navigate away from stay mounted but hidden (React Activity); their effects clean up and re-run. Read `node_modules/next/dist/docs/01-app/02-guides/preserving-ui-state.md` before adding stateful UI.
+- A layout's `title.template` does not apply to a page in the same segment (`/` sets its full title).
+- `three` is pinned to 0.182.0: R3F 9.8 constructs `THREE.Clock`, and r183+ logs a deprecation warning for it on every canvas mount. Unpin when R3F moves to `THREE.Timer`.
+- The CSP in `next.config.ts` has no `blob:` or `worker-src`. GLB textures, Draco and KTX2 loaders will need them.
+- `npm run typecheck` needs a prior build or `next dev` run: route types (`LayoutProps`) are generated into `.next/types`.
 
 ## Ports
-- Dev and `next start` are pinned to 3200. QA tools use 3100.
-- Never start a server on 3001 (Input2PDF) and never let Next pick a port: an unpinned `next dev` falls through to 3001 when 3000 is busy.
+- Dev and `next start` are pinned to 3200. QA tools (crawl, Playwright, Lighthouse) use 3100.
+- Never start a server on 3001 (Input2PDF). Never run an unpinned `next dev`: it falls through to 3001 when 3000 is busy.
+
+## Commands and gates
+- `npm run dev`, `npm run build`, `npm run lint`, `npm run typecheck`
+- `npm run test:run`: Vitest (tokens, Tailwind theme contract, theme, canvas host state, Lenis wiring, lab).
+- `npm run qa:crawl`: route crawl of the production build at 375 / 768 / 1440. `--strict` exits 1 on a blocker.
+- `npm run e2e`: Playwright runtime specs (needs a build).
+- `npm run qa:lighthouse`: the §9 budgets on `/` (needs a build and Node 22.19+).
+- CI (`.github/workflows/ci.yml`) runs all of them on every push to `v2`.

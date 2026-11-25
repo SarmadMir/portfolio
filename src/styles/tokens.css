@@ -1,0 +1,268 @@
+/*
+ * GENERATED FILE — do not edit.
+ * Source: src/styles/tokens.json (Sarmad OS v2).
+ * Regenerate with `npm run tokens`; tests/tokens.test.ts fails when this file drifts.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* color */
+  --ground: #141619;
+  --surface: #1c1e22;
+  --surface-2: #25282d;
+  --line: #30343a;
+  --line-strong: #6f747e;
+  --ink: #e7e4de;
+  --ink-2: #a7a39b;
+  --ink-3: #959088;
+  --accent: #b08a5a;
+  --accent-text: #cfa97a;
+  --on-accent: #1b1409;
+  --positive: #8fb8a6;
+  --negative: #d4917f;
+  --focus: var(--accent-text);
+  --scrim: #141619c0;
+  --frost-tint: #1c1e22b8;
+  --frost-border: #ffffff14;
+  --frost-edge: #ffffff1a;
+  --field-near: var(--ink-2);
+  --field-far: var(--line-strong);
+  --field-live: var(--accent-text);
+  --cube-white: #d9d6d0;
+  --cube-yellow: #c6b06a;
+  --cube-red: #a85a4e;
+  --cube-orange: var(--accent);
+  --cube-blue: #5e7390;
+  --cube-green: #6f8f72;
+
+  /* shadow */
+  --shadow-frost: inset 0 1px 0 0 #ffffff1a, 0 16px 40px -16px #00000099;
+  --shadow-stone: 0 0 0 1px #30343a, 0 32px 80px -24px #000000b3;
+  --shadow-pill: inset 0 1px 0 0 #ffffff1a, 0 10px 28px -10px #000000a6;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* color */
+  --ground: #ebe7e0;
+  --surface: #f5f2ed;
+  --surface-2: #e1dcd3;
+  --line: #d1cbc1;
+  --line-strong: #817b72;
+  --ink: #1f1e1b;
+  --ink-2: #5a5650;
+  --ink-3: #645f58;
+  --accent: #a67c4c;
+  --accent-text: #6b4c25;
+  --on-accent: #1b1409;
+  --positive: #3a675a;
+  --negative: #994838;
+  --focus: var(--accent-text);
+  --scrim: #1f1e1b73;
+  --frost-tint: #f5f2edb8;
+  --frost-border: #1f1e1b1a;
+  --frost-edge: #ffffff8c;
+  --field-near: var(--ink-2);
+  --field-far: var(--line-strong);
+  --field-live: var(--accent-text);
+  --cube-white: #d9d6d0;
+  --cube-yellow: #c6b06a;
+  --cube-red: #a85a4e;
+  --cube-orange: var(--accent);
+  --cube-blue: #5e7390;
+  --cube-green: #6f8f72;
+
+  /* shadow */
+  --shadow-frost: inset 0 1px 0 0 #ffffff8c, 0 16px 40px -20px #1f1e1b40;
+  --shadow-stone: 0 0 0 1px #d1cbc1, 0 32px 80px -32px #1f1e1b3d;
+  --shadow-pill: inset 0 1px 0 0 #ffffff8c, 0 10px 28px -14px #1f1e1b33;
+}
+
+:root {
+  /* spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* material */
+  --grain-opacity: 0.035;
+  --grain-tile: 256px;
+  --grain-frequency: 0.9;
+  --frost-blur: 20px;
+  --frost-saturate: 110%;
+  --lens-magnify: 1.16;
+  --lens-displace: 10;
+  --lens-size: 40px;
+
+  /* duration */
+  --duration-fast: 120ms;
+  --duration-base: 240ms;
+  --duration-slow: 480ms;
+
+  /* easing */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* z-index */
+  --z-field: 0;
+  --z-desktop: 1;
+  --z-window: 10;
+  --z-taskbar: 20;
+  --z-lens: 21;
+  --z-scrim: 30;
+  --z-boot: 50;
+  --z-cursor: 60;
+
+  /* type scale */
+  --text-hero: 72px;
+  --text-hero--line-height: 1;
+  --text-hero--font-weight: 300;
+  --text-hero--letter-spacing: -0.02em;
+  --text-hero--optical-size: 96;
+  --text-title-1: 48px;
+  --text-title-1--line-height: 1.05;
+  --text-title-1--font-weight: 400;
+  --text-title-1--letter-spacing: -0.02em;
+  --text-title-1--optical-size: 48;
+  --text-title-2: 32px;
+  --text-title-2--line-height: 1.1;
+  --text-title-2--font-weight: 400;
+  --text-title-2--letter-spacing: -0.015em;
+  --text-title-2--optical-size: 32;
+  --text-title-3: 24px;
+  --text-title-3--line-height: 1.2;
+  --text-title-3--font-weight: 400;
+  --text-title-3--letter-spacing: -0.01em;
+  --text-title-3--optical-size: 24;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-body--font-weight: 400;
+  --text-small: 14px;
+  --text-small--line-height: 20px;
+  --text-small--font-weight: 400;
+  --text-taskbar: 14px;
+  --text-taskbar--line-height: 16px;
+  --text-taskbar--font-weight: 500;
+  --text-taskbar--letter-spacing: 0.01em;
+  --text-mark: 14px;
+  --text-mark--line-height: 16px;
+  --text-mark--font-weight: 600;
+  --text-mark--letter-spacing: -0.02em;
+  --text-label: 12px;
+  --text-label--line-height: 16px;
+  --text-label--font-weight: 500;
+  --text-label--letter-spacing: 0.08em;
+  --text-code: 13px;
+  --text-code--line-height: 20px;
+  --text-code--font-weight: 400;
+}
+
+@theme inline {
+  --color-*: initial;
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+
+  --font-*: initial;
+  --font-display: var(--font-display), system-ui, sans-serif;
+  --font-text: var(--font-text), system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --text-*: initial;
+  --text-hero: var(--text-hero);
+  --text-hero--line-height: var(--text-hero--line-height);
+  --text-hero--font-weight: var(--text-hero--font-weight);
+  --text-hero--letter-spacing: var(--text-hero--letter-spacing);
+  --text-title-1: var(--text-title-1);
+  --text-title-1--line-height: var(--text-title-1--line-height);
+  --text-title-1--font-weight: var(--text-title-1--font-weight);
+  --text-title-1--letter-spacing: var(--text-title-1--letter-spacing);
+  --text-title-2: var(--text-title-2);
+  --text-title-2--line-height: var(--text-title-2--line-height);
+  --text-title-2--font-weight: var(--text-title-2--font-weight);
+  --text-title-2--letter-spacing: var(--text-title-2--letter-spacing);
+  --text-title-3: var(--text-title-3);
+  --text-title-3--line-height: var(--text-title-3--line-height);
+  --text-title-3--font-weight: var(--text-title-3--font-weight);
+  --text-title-3--letter-spacing: var(--text-title-3--letter-spacing);
+  --text-body-lg: var(--text-body-lg);
+  --text-body-lg--line-height: var(--text-body-lg--line-height);
+  --text-body-lg--font-weight: var(--text-body-lg--font-weight);
+  --text-body: var(--text-body);
+  --text-body--line-height: var(--text-body--line-height);
+  --text-body--font-weight: var(--text-body--font-weight);
+  --text-small: var(--text-small);
+  --text-small--line-height: var(--text-small--line-height);
+  --text-small--font-weight: var(--text-small--font-weight);
+  --text-taskbar: var(--text-taskbar);
+  --text-taskbar--line-height: var(--text-taskbar--line-height);
+  --text-taskbar--font-weight: var(--text-taskbar--font-weight);
+  --text-taskbar--letter-spacing: var(--text-taskbar--letter-spacing);
+  --text-mark: var(--text-mark);
+  --text-mark--line-height: var(--text-mark--line-height);
+  --text-mark--font-weight: var(--text-mark--font-weight);
+  --text-mark--letter-spacing: var(--text-mark--letter-spacing);
+  --text-label: var(--text-label);
+  --text-label--line-height: var(--text-label--line-height);
+  --text-label--font-weight: var(--text-label--font-weight);
+  --text-label--letter-spacing: var(--text-label--letter-spacing);
+  --text-code: var(--text-code);
+  --text-code--line-height: var(--text-code--line-height);
+  --text-code--font-weight: var(--text-code--font-weight);
+
+  --radius-*: initial;
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-pill: var(--radius-pill);
+
+  --ease-*: initial;
+  --ease-standard: var(--ease-standard);
+  --ease-spring: var(--ease-spring);
+}
+
+@theme {
+  --spacing: 4px;
+  --default-font-family: var(--font-text), system-ui, sans-serif;
+  --default-mono-font-family: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+@utility t-fast {
+  transition-duration: var(--duration-fast);
+}
+
+@utility t-base {
+  transition-duration: var(--duration-base);
+}
+
+@utility t-slow {
+  transition-duration: var(--duration-slow);
+}

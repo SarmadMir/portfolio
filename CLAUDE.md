@@ -10,12 +10,13 @@ This branch is the scaffold: runtime and gates. No sections, no components beyon
 - `src/styles/tokens.json` → `npm run tokens` → `src/styles/tokens.css`. Generated, never hand-edited; see `src/styles/README.md`. Model and renderer: `src/lib/tokens/`.
 - `src/styles/fonts.ts`: next/font sets `--font-display`, `--font-text`, `--font-mono` on `<html>`.
 - `src/lib/motion/`: `gsap.ts` (gsap, ScrollTrigger, useGSAP), `flip.ts` / `split-text.ts` / `draw-svg.ts` / `morph-svg.ts` (opt-in plugins, registered on import), `SmoothScroll.tsx` (the one Lenis, `useLenis()`), `useReducedMotion.ts`.
-- `src/lib/three/`: `CanvasHost.tsx` (the one WebGL context, `useSharedCanvas()`), `SharedCanvas.tsx` (the only `<Canvas>`), `host-state.ts` (its pure state).
+- `src/lib/three/`: `CanvasHost.tsx` (the one WebGL context, `useSharedCanvas()`), `SharedCanvas.tsx` (the only `<Canvas>`), `host-state.ts` (which scenes exist, when the canvas mounts), `frame-driver.ts` (when frames are drawn, and the clock).
 - `src/lib/theme/`: `ThemeProvider.tsx` (`useTheme()`), `theme.ts` (rules and the inline bootstrap).
 - `src/app/providers.tsx` composes the three providers. `src/app/page.tsx` is the dev home (token swatches, type scale). `src/app/lab/` holds the prototype slots: cube, field, lens, fold.
 
 ## Rules
-- System values only. The colour, font, text, radius and ease namespaces of Tailwind are reset, so `bg-red-500`, `text-sm`, `rounded-2xl`, `ease-in-out` do not exist. Use `bg-ground`, `text-ink-2`, `text-title-1`, `rounded-lg`, `ease-spring`, `t-fast`. Spacing is N × 4px.
+- System values only. The colour, font, text, radius, shadow and ease namespaces of Tailwind are reset, so `bg-red-500`, `text-sm`, `rounded-2xl`, `shadow-md`, `ease-in-out` do not exist. Use `bg-ground`, `text-ink-2`, `text-title-1`, `rounded-lg`, `shadow-stone`, `ease-spring`, `t-fast`. Spacing is N × 4px. A `transition-*` with no `t-*` runs at `duration-fast` on `ease-standard`.
+- Tailwind scans only `src/**/*.{ts,tsx}` for class names (`source(none)` in `globals.css`). A class written anywhere else generates nothing.
 - Theming is `data-theme` on `<html>`; it also works on any nested element. Never hard-code a colour.
 - One scroll runtime: import GSAP only from `@/lib/motion/*`; never import `lenis` or native-smooth-scroll anything. ESLint enforces it. No anime.js, Barba or Rellax.
 - One WebGL context per page: never render `<Canvas>`. A scene registers its element and renders through drei's `<View>`:
@@ -37,7 +38,8 @@ This branch is the scaffold: runtime and gates. No sections, no components beyon
   }
   ```
 
-  The canvas is fixed at `z-field`, behind the page: a scene shows wherever the DOM above it is transparent. It loads when a scene nears the viewport and renders no frames while none is in view.
+  The canvas is fixed at `z-field`, behind the page: a scene shows wherever the DOM above it is transparent. It loads when a scene nears the viewport and draws no frames while none is in view. `loop` may change at any time (for example while audio plays) without rebuilding the context. The clock runs only while frames are drawn: `clock.elapsedTime` continues where it stopped and the first delta after a pause is zero, so time-driven animation never jumps.
+- Lenis is created in an effect, after its descendants' effects have run. `useLenis()` returns the instance or `null` and re-renders when that changes, so depend on it: `useEffect(() => { if (!lenis) return; lenis.stop(); return () => lenis.start(); }, [lenis])`.
 - Every moving thing branches on `useReducedMotion()` to its static state.
 - Write the standard `backdrop-filter` only.
 - Copy: facts only, no emoji. Pending content is `[placeholder]`.
@@ -45,6 +47,8 @@ This branch is the scaffold: runtime and gates. No sections, no components beyon
 ## Gotchas
 - `cacheComponents` is on. Routes you navigate away from stay mounted but hidden (React Activity); their effects clean up and re-run. Read `node_modules/next/dist/docs/01-app/02-guides/preserving-ui-state.md` before adding stateful UI.
 - A layout's `title.template` does not apply to a page in the same segment (`/` sets its full title).
+- `text-hero` sets size, line height, weight and tracking, but Tailwind's text utilities cannot set the optical size. The hero also needs `font-variation-settings: "opsz" var(--text-hero--optical-size)` (the token asks for 96; the browser's automatic value at 72px is 72). The dev home does this inline.
+- R3F resets its clock whenever the `frameloop` prop changes. `SharedCanvas` keeps it at `demand` for that reason; never make it dynamic.
 - `three` is pinned to 0.182.0: R3F 9.8 constructs `THREE.Clock`, and r183+ logs a deprecation warning for it on every canvas mount. Unpin when R3F moves to `THREE.Timer`.
 - The CSP in `next.config.ts` has no `blob:` or `worker-src`. GLB textures, Draco and KTX2 loaders will need them.
 - `npm run typecheck` needs a prior build or `next dev` run: route types (`LayoutProps`) are generated into `.next/types`.
@@ -55,7 +59,7 @@ This branch is the scaffold: runtime and gates. No sections, no components beyon
 
 ## Commands and gates
 - `npm run dev`, `npm run build`, `npm run lint`, `npm run typecheck`
-- `npm run test:run`: Vitest (tokens, Tailwind theme contract, theme, canvas host state, Lenis wiring, lab).
+- `npm run test:run`: Vitest (tokens, Tailwind theme contract, theme and its provider, canvas host and frame driver, Lenis wiring and provider, lab).
 - `npm run qa:crawl`: route crawl of the production build at 375 / 768 / 1440. `--strict` exits 1 on a blocker.
 - `npm run e2e`: Playwright runtime specs (needs a build).
 - `npm run qa:lighthouse`: the §9 budgets on `/` (needs a build and Node 22.19+).

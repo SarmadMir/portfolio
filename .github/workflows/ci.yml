@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [v2, main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: Build, types, tests, crawl, Lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      # Node 24 matches the Vercel project; Lighthouse 13 needs 22.19 or newer.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # After the build: route types (LayoutProps) are generated into .next/types.
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests (Vitest)
+        run: npm run test:run
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Route crawl at 375 and 1440
+        run: npm run qa:crawl -- --no-build --viewports 375,1440 --strict --out qa-report/crawl.md
+
+      - name: Runtime specs (Playwright)
+        run: npm run e2e
+
+      - name: Lighthouse CI on / (brief §9 budgets)
+        run: npm run qa:lighthouse
+
+      - name: Upload QA reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: qa-reports
+          path: |
+            qa-report
+            .lighthouseci
+            test-results
+          if-no-files-found: ignore
+          retention-days: 14

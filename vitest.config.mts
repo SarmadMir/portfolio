@@ -6,8 +6,9 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   test: {
+    // Node by default; a file that needs a DOM opts in with `// @vitest-environment happy-dom`.
     environment: "node",
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.{ts,tsx}"],
     testTimeout: 10_000,
   },
 });

@@ -44,9 +44,9 @@ module.exports = {
       },
     },
     upload: {
-      // Reports stay in the workspace (CI uploads them as an artifact); nothing is sent to a public store.
+      // Reports stay in the workspace (CI uploads qa-report as an artifact); nothing is sent to a public store.
       target: "filesystem",
-      outputDir: ".lighthouseci/reports",
+      outputDir: "qa-report/lighthouse",
     },
   },
 };

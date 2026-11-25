@@ -59,9 +59,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: qa-reports
+          # upload-artifact skips hidden folders, so every report lives under qa-report.
           path: |
             qa-report
-            .lighthouseci
             test-results
           if-no-files-found: ignore
           retention-days: 14

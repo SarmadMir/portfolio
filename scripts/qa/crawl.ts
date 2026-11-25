@@ -70,9 +70,14 @@ const VIEWPORTS = [375, 768, 1440] as const;
 type Viewport = (typeof VIEWPORTS)[number];
 const HEIGHT: Record<Viewport, number> = { 375: 812, 768: 1024, 1440: 900 };
 const viewportArg = flag("--viewports");
-const ACTIVE_VIEWPORTS: readonly Viewport[] = viewportArg
-  ? VIEWPORTS.filter((v) => viewportArg.split(",").map(Number).includes(v))
-  : VIEWPORTS;
+const requestedViewports = viewportArg?.split(",").map((s) => Number(s.trim())) ?? [...VIEWPORTS];
+const unknownViewports = requestedViewports.filter((v) => !VIEWPORTS.includes(v as Viewport));
+if (unknownViewports.length > 0 || requestedViewports.length === 0) {
+  // A gate that silently crawls nothing would pass when it should fail.
+  console.error(`[qa:crawl] --viewports takes ${VIEWPORTS.join(", ")}; got "${viewportArg ?? ""}".`);
+  process.exit(1);
+}
+const ACTIVE_VIEWPORTS: readonly Viewport[] = VIEWPORTS.filter((v) => requestedViewports.includes(v));
 const ROUTE_FILTER = flag("--routes")?.split(",").map((s) => s.trim()).filter(Boolean) ?? null;
 
 /** Dynamic segments → the slugs to expand them with (from config, not guesses). None yet. */
@@ -624,6 +629,10 @@ async function main() {
     console.log(`[qa:crawl] server on :${PORT} stopped: ${(await isListening()) ? "NO — still listening!" : "yes"}`);
   }
   if (failure) process.exit(1);
+  if (routes.length === 0) {
+    console.error("[qa:crawl] no routes were crawled.");
+    process.exit(1);
+  }
   if (STRICT && blockers > 0) {
     console.error(`[qa:crawl] --strict: ${blockers} blocker(s) → exit 1`);
     process.exit(1);

@@ -8,15 +8,20 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+const crumb = "transition-colors hover:text-ink";
+
 export default function LabLayout({ children }: LayoutProps<"/lab">) {
   return (
-    <main className="flex flex-1 flex-col gap-8 px-4 py-12 md:px-16 md:py-16">
-      <Link
-        href="/lab"
-        className="self-start font-mono text-label text-ink-2 uppercase transition-colors t-fast ease-standard hover:text-ink"
-      >
-        Lab
-      </Link>
+    <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col gap-8 px-4 py-12 md:px-16 md:py-16">
+      <nav aria-label="Breadcrumb" className="flex gap-2 font-mono text-label text-ink-2 uppercase">
+        <Link href="/" className={crumb}>
+          Tokens
+        </Link>
+        <span aria-hidden>/</span>
+        <Link href="/lab" className={crumb}>
+          Lab
+        </Link>
+      </nav>
       {children}
     </main>
   );

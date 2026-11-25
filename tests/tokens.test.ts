@@ -33,7 +33,7 @@ function editableSource() {
 const dark = declarations(ruleBody(':root,\n[data-theme="dark"]'));
 const light = declarations(ruleBody('[data-theme="light"]'));
 const constants = declarations(ruleBody(":root"));
-const themeInline = declarations(ruleBody("@theme inline"));
+const themeInline = declarations(ruleBody("@theme inline reference"));
 const themeStatic = declarations(ruleBody("@theme"));
 
 describe("tokens.json → model", () => {
@@ -170,9 +170,20 @@ describe("tokens.css → Tailwind theme", () => {
     for (const name of ["radius-sm", "radius-md", "radius-lg", "radius-pill", "ease-standard", "ease-spring"]) {
       expect(themeInline.get(`--${name}`), name).toBe(`var(--${name})`);
     }
-    for (const namespace of ["--color-*", "--font-*", "--text-*", "--radius-*", "--ease-*"]) {
+    for (const namespace of ["--color-*", "--font-*", "--text-*", "--radius-*", "--shadow-*", "--ease-*"]) {
       expect(themeInline.get(namespace), namespace).toBe("initial");
     }
+  });
+
+  it("aliases the three system shadows", () => {
+    for (const name of ["shadow-frost", "shadow-stone", "shadow-pill"]) {
+      expect(themeInline.get(`--${name}`), name).toBe(`var(--${name})`);
+    }
+  });
+
+  it("makes a bare transition use a system duration and curve", () => {
+    expect(themeStatic.get("--default-transition-duration")).toBe("var(--duration-fast)");
+    expect(themeStatic.get("--default-transition-timing-function")).toBe("var(--ease-standard)");
   });
 
   it("maps the type scale onto text-* utilities", () => {

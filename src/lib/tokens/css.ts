@@ -4,7 +4,9 @@ import { FONT_FAMILIES, THEMES, type FontFamilyId, type TokenModel, type TokenSe
  * Renders src/styles/tokens.css from the token model. Layout of the output:
  *   1. one rule per theme with every themed token (dark doubles as :root),
  *   2. :root with every unthemed token and the type scale,
- *   3. @theme: the Tailwind aliases from the design system's build notes,
+ *   3. @theme: the Tailwind aliases from the design system's build notes (plus the
+ *      type scale and shadows), with the colour, font, text, radius, shadow and
+ *      ease namespaces reset so nothing outside the system has a utility,
  *   4. @utility t-*: one transition-duration utility per duration token.
  */
 
@@ -87,6 +89,10 @@ export function renderTokensCss(model: TokenModel): string {
     if (!colors.has(name)) throw new Error(`tokens.json: the utility colour "${name}" is not a colour token`);
   }
 
+  // Hover, press and colour changes are the common case: the fastest duration, the arriving curve.
+  const defaultDuration = prefixed(model, "duration", "duration-")[0];
+  const defaultEasing = prefixed(model, "easing", "ease-")[0];
+
   const header = [
     "/*",
     " * GENERATED FILE — do not edit.",
@@ -111,7 +117,9 @@ export function renderTokensCss(model: TokenModel): string {
   ]);
 
   const alias = (name: string) => `--${name}: var(--${name});`;
-  const themeAliases = rule("@theme inline", [
+  // inline: utilities read the token variable itself, so a nested [data-theme] repaints.
+  // reference: Tailwind emits no variables of its own here; the rules above stay the only declarations.
+  const themeAliases = rule("@theme inline reference", [
     ["--color-*: initial;", ...UTILITY_COLORS.map((name) => `--color-${name}: var(--${name});`)],
     ["--font-*: initial;", ...FONT_FAMILIES.map((family) => `--font-${family}: ${fontStack(model, family)};`)],
     [
@@ -124,6 +132,7 @@ export function renderTokensCss(model: TokenModel): string {
       }),
     ],
     ["--radius-*: initial;", ...prefixed(model, "radius", "radius-").map(alias)],
+    ["--shadow-*: initial;", ...prefixed(model, "shadow", "shadow-").map(alias)],
     ["--ease-*: initial;", ...prefixed(model, "easing", "ease-").map(alias)],
   ]);
 
@@ -132,6 +141,9 @@ export function renderTokensCss(model: TokenModel): string {
       `--spacing: ${model.spacingUnit}px;`,
       `--default-font-family: ${fontStack(model, "text")};`,
       `--default-mono-font-family: ${fontStack(model, "mono")};`,
+      // A transition utility without t-* or ease-* still lands on system values.
+      `--default-transition-duration: var(--${defaultDuration});`,
+      `--default-transition-timing-function: var(--${defaultEasing});`,
     ],
   ]);
 

@@ -15,11 +15,11 @@ const entry = resolve(process.cwd(), "src/app/globals.css");
 const ON_SYSTEM = [
   "bg-ground", "text-ink-2", "border-line-strong", "font-display", "font-mono",
   "text-hero", "text-label", "rounded-lg", "rounded-pill", "ease-spring",
-  "t-fast", "t-base", "t-slow", "p-6",
+  "t-fast", "t-base", "t-slow", "p-6", "shadow-stone", "shadow-frost", "transition-colors",
 ];
 const OFF_SYSTEM = [
   "bg-red-500", "text-white", "bg-black", "rounded-2xl", "ease-in-out",
-  "font-sans", "text-sm", "text-9xl",
+  "font-sans", "text-sm", "text-9xl", "shadow", "shadow-md",
 ];
 
 let css = "";
@@ -69,6 +69,17 @@ describe("utilities resolve to token variables", () => {
     expect(utility("ease-spring")).toContain("transition-timing-function: var(--ease-spring)");
   });
 
+  it("shadows are the system's, never Tailwind's black ones", () => {
+    expect(utility("shadow-stone")).toContain("--tw-shadow: var(--shadow-stone)");
+    expect(utility("shadow-frost")).toContain("--tw-shadow: var(--shadow-frost)");
+  });
+
+  it("a transition with no t-* still runs on a system duration and curve", () => {
+    expect(utility("transition-colors")).toContain("var(--default-transition-duration)");
+    expect(css).toContain("--default-transition-duration: var(--duration-fast)");
+    expect(css).toContain("--default-transition-timing-function: var(--ease-standard)");
+  });
+
   it("t-fast, t-base and t-slow set the three durations", () => {
     expect(utility("t-fast")).toContain("transition-duration: var(--duration-fast)");
     expect(utility("t-base")).toContain("transition-duration: var(--duration-base)");
@@ -84,6 +95,18 @@ describe("utilities resolve to token variables", () => {
 describe("nothing outside the system exists", () => {
   it.each(OFF_SYSTEM)("%s generates no rule", (name) => {
     expect(utility(name)).toBe("");
+  });
+});
+
+describe("the theme layer", () => {
+  it("never declares a variable as itself (tokens stay the single declaration)", () => {
+    expect(css).not.toMatch(/(--[a-z0-9-]+): var\(\1\)/);
+  });
+
+  it("scans only the app's TypeScript for class names, not docs, tests or scripts", () => {
+    const source = readFileSync(entry, "utf8");
+    expect(source).toContain('@import "tailwindcss" source(none);');
+    expect(source).toContain('@source "../**/*.{ts,tsx}";');
   });
 });
 

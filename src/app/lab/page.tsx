@@ -10,7 +10,7 @@ export default function LabIndex() {
           <li key={slot.slug}>
             <Link
               href={`/lab/${slot.slug}`}
-              className="text-body-lg text-accent-text underline decoration-line-strong underline-offset-4 transition-colors t-fast ease-standard hover:decoration-accent-text"
+              className="text-body-lg text-accent-text underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-accent-text"
             >
               {slot.title}
             </Link>

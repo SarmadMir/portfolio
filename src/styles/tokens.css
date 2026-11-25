@@ -175,7 +175,7 @@
   --text-code--font-weight: 400;
 }
 
-@theme inline {
+@theme inline reference {
   --color-*: initial;
   --color-ground: var(--ground);
   --color-surface: var(--surface);
@@ -244,6 +244,11 @@
   --radius-lg: var(--radius-lg);
   --radius-pill: var(--radius-pill);
 
+  --shadow-*: initial;
+  --shadow-frost: var(--shadow-frost);
+  --shadow-stone: var(--shadow-stone);
+  --shadow-pill: var(--shadow-pill);
+
   --ease-*: initial;
   --ease-standard: var(--ease-standard);
   --ease-spring: var(--ease-spring);
@@ -253,6 +258,8 @@
   --spacing: 4px;
   --default-font-family: var(--font-text), system-ui, sans-serif;
   --default-mono-font-family: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --default-transition-duration: var(--duration-fast);
+  --default-transition-timing-function: var(--ease-standard);
 }
 
 @utility t-fast {

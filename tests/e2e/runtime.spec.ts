@@ -116,9 +116,39 @@ test.describe("lab", () => {
       await page.goto(`/lab/${slug}`);
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
-      await expect(page.locator("main > *")).toHaveCount(2); // the Lab link and the title
+      await expect(page.locator("main > *")).toHaveCount(2); // the breadcrumb and the title
     });
   }
+
+  test("has a way back to the lab index and to the dev home", async ({ page }) => {
+    await page.goto("/lab/fold");
+    const crumbs = page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link");
+    await expect(crumbs).toHaveText(["Tokens", "Lab"]);
+    await crumbs.nth(1).click();
+    await expect(page).toHaveURL(/\/lab$/);
+    await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Tokens" }).click();
+    await expect(page).toHaveURL(/\/$/);
+  });
+});
+
+test.describe("shipped CSS", () => {
+  test("carries only system values: no stray utilities, no hard-coded shadow, no Tailwind default timing", async ({ page, request }) => {
+    await page.goto("/");
+    const hrefs = await page.locator('link[rel="stylesheet"]').evaluateAll((links) => links.map((link) => (link as HTMLLinkElement).href));
+    expect(hrefs.length).toBeGreaterThan(0);
+    const css = (await Promise.all(hrefs.map(async (href) => (await request.get(href)).text()))).join("\n");
+
+    // Words in docs, tests and scripts must not become rules.
+    expect(css).not.toContain("qa\\:crawl");
+    expect(css).not.toMatch(/\.backdrop-filter\{/);
+    expect(css).not.toMatch(/\.(sepia|blur|shadow)\{/);
+    // Tailwind's own shadow colour and transition defaults are replaced by tokens.
+    expect(css).not.toContain("#0000001a");
+    expect(css).not.toContain("--default-transition-duration:.15s");
+    expect(css).toContain("--default-transition-duration:var(--duration-fast)");
+    // The theme layer never redeclares a token as itself.
+    expect(css).not.toMatch(/(--[a-z0-9-]+):var\(\1\)/);
+  });
 });
 
 test.describe("security headers", () => {

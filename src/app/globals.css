@@ -1,5 +1,11 @@
-@import "tailwindcss";
+/*
+ * source(none): Tailwind does not guess where class names live. Left to
+ * itself it scans docs, tests, scripts and tokens.json and ships utilities
+ * for stray words in them. Only the app's TypeScript is scanned.
+ */
+@import "tailwindcss" source(none);
 @import "../styles/tokens.css";
+@source "../**/*.{ts,tsx}";
 
 /*
  * Tokens, the Tailwind theme and the t-* utilities live in the generated

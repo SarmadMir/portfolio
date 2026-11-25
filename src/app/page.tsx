@@ -131,7 +131,7 @@ export default function DevHome() {
           live in the{" "}
           <Link
             href="/lab"
-            className="text-accent-text underline decoration-line-strong underline-offset-4 transition-colors t-fast ease-standard hover:decoration-accent-text"
+            className="text-accent-text underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-accent-text"
           >
             Lab
           </Link>
@@ -148,7 +148,7 @@ export default function DevHome() {
             <div
               key={theme}
               data-theme={theme}
-              className="flex min-w-0 flex-col gap-12 rounded-lg bg-ground p-4 text-ink [box-shadow:var(--shadow-stone)] md:p-6"
+              className="flex min-w-0 flex-col gap-12 rounded-lg bg-ground p-4 text-ink shadow-stone md:p-6"
             >
               <p className={eyebrow}>data-theme=&quot;{theme}&quot;</p>
               {themedSections.map((section) => (

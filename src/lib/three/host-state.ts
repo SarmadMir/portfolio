@@ -3,7 +3,9 @@
  * tested on its own: which scenes are registered, whether the canvas is
  * mounted, and how often it renders.
  */
-export type Frameloop = "always" | "demand" | "never";
+
+/** How often the canvas renders: every frame, only when asked, or not at all. */
+export type RenderMode = "always" | "demand" | "never";
 
 /** "always": the scene animates on its own. "demand": it renders when invalidated. */
 export type LoopMode = "always" | "demand";
@@ -21,7 +23,8 @@ export interface HostState {
 }
 
 export type HostAction =
-  | { type: "register"; element: Element; loop: LoopMode }
+  | { type: "register"; element: Element }
+  | { type: "loop"; element: Element; loop: LoopMode }
   | { type: "unregister"; element: Element }
   | { type: "visibility"; changes: readonly (readonly [Element, boolean])[] };
 
@@ -46,10 +49,18 @@ function withScenes(state: HostState, scenes: ReadonlyMap<Element, SceneState>):
 export function hostReducer(state: HostState, action: HostAction): HostState {
   switch (action.type) {
     case "register": {
-      const current = state.scenes.get(action.element);
-      if (current?.loop === action.loop) return state;
+      if (state.scenes.has(action.element)) return state;
       const scenes = new Map(state.scenes);
-      scenes.set(action.element, { visible: current?.visible ?? false, loop: action.loop });
+      scenes.set(action.element, { visible: false, loop: "always" });
+      return withScenes(state, scenes);
+    }
+    // Its own action, so changing how a scene loops never unregisters it:
+    // dropping the last scene would destroy the WebGL context.
+    case "loop": {
+      const current = state.scenes.get(action.element);
+      if (!current || current.loop === action.loop) return state;
+      const scenes = new Map(state.scenes);
+      scenes.set(action.element, { ...current, loop: action.loop });
       return withScenes(state, scenes);
     }
     case "unregister": {
@@ -75,7 +86,7 @@ export function hostReducer(state: HostState, action: HostAction): HostState {
  * One decision for the one canvas. Nothing in view: no frames at all.
  * Reduced motion: frames only when a scene invalidates (its static state).
  */
-export function resolveFrameloop(scenes: Iterable<SceneState>, reducedMotion: boolean): Frameloop {
+export function resolveRenderMode(scenes: Iterable<SceneState>, reducedMotion: boolean): RenderMode {
   let anyVisible = false;
   let anyContinuous = false;
   for (const scene of scenes) {

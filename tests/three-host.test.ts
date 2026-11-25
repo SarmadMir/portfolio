@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hostReducer, initialHostState, resolveFrameloop, type HostState } from "@/lib/three/host-state";
+import { hostReducer, initialHostState, resolveRenderMode, type HostState } from "@/lib/three/host-state";
 
 const hero = { id: "hero" } as unknown as Element;
 const about = { id: "about" } as unknown as Element;
@@ -10,14 +10,14 @@ function run(...actions: Parameters<typeof hostReducer>[1][]): HostState {
 
 describe("shared canvas: when the one WebGL context exists", () => {
   it("does not mount for a scene that is registered but far from the viewport", () => {
-    const state = run({ type: "register", element: hero, loop: "always" });
+    const state = run({ type: "register", element: hero });
     expect(state.scenes.size).toBe(1);
     expect(state.mounted).toBe(false);
   });
 
   it("mounts when a registered scene comes near the viewport", () => {
     const state = run(
-      { type: "register", element: hero, loop: "always" },
+      { type: "register", element: hero },
       { type: "visibility", changes: [[hero, true]] },
     );
     expect(state.mounted).toBe(true);
@@ -25,7 +25,7 @@ describe("shared canvas: when the one WebGL context exists", () => {
 
   it("keeps the context while the scene scrolls away, so coming back is instant", () => {
     const state = run(
-      { type: "register", element: hero, loop: "always" },
+      { type: "register", element: hero },
       { type: "visibility", changes: [[hero, true]] },
       { type: "visibility", changes: [[hero, false]] },
     );
@@ -34,7 +34,7 @@ describe("shared canvas: when the one WebGL context exists", () => {
 
   it("releases the context when the last scene unregisters", () => {
     const state = run(
-      { type: "register", element: hero, loop: "always" },
+      { type: "register", element: hero },
       { type: "visibility", changes: [[hero, true]] },
       { type: "unregister", element: hero },
     );
@@ -44,8 +44,9 @@ describe("shared canvas: when the one WebGL context exists", () => {
 
   it("serves two scenes from the same mounted canvas", () => {
     const state = run(
-      { type: "register", element: hero, loop: "always" },
-      { type: "register", element: about, loop: "demand" },
+      { type: "register", element: hero },
+      { type: "register", element: about },
+      { type: "loop", element: about, loop: "demand" },
       { type: "visibility", changes: [[about, true]] },
       { type: "unregister", element: about },
     );
@@ -60,34 +61,42 @@ describe("shared canvas: when the one WebGL context exists", () => {
 
   it("returns the same state when nothing changed, so React skips the render", () => {
     const before = run(
-      { type: "register", element: hero, loop: "always" },
+      { type: "register", element: hero },
       { type: "visibility", changes: [[hero, true]] },
     );
     expect(hostReducer(before, { type: "visibility", changes: [[hero, true]] })).toBe(before);
-    expect(hostReducer(before, { type: "register", element: hero, loop: "always" })).toBe(before);
+    expect(hostReducer(before, { type: "register", element: hero })).toBe(before);
+    expect(hostReducer(before, { type: "loop", element: hero, loop: "always" })).toBe(before);
+    expect(hostReducer(before, { type: "loop", element: about, loop: "demand" })).toBe(before);
     expect(hostReducer(before, { type: "unregister", element: about })).toBe(before);
   });
 
-  it("keeps a scene's visibility when it registers again with another loop mode", () => {
+  it("registers a scene as continuous until told otherwise", () => {
+    const state = run({ type: "register", element: hero });
+    expect(state.scenes.get(hero)).toEqual({ visible: false, loop: "always" });
+  });
+
+  it("changes a scene's loop mode in place: still registered, still visible, context kept", () => {
     const state = run(
-      { type: "register", element: hero, loop: "always" },
+      { type: "register", element: hero },
       { type: "visibility", changes: [[hero, true]] },
-      { type: "register", element: hero, loop: "demand" },
+      { type: "loop", element: hero, loop: "demand" },
     );
     expect(state.scenes.get(hero)).toEqual({ visible: true, loop: "demand" });
+    expect(state.mounted).toBe(true);
   });
 });
 
-describe("shared canvas: frameloop", () => {
+describe("shared canvas: how often it renders", () => {
   it("never renders when no scene is in view", () => {
-    expect(resolveFrameloop([], false)).toBe("never");
-    expect(resolveFrameloop([{ visible: false, loop: "always" }], false)).toBe("never");
+    expect(resolveRenderMode([], false)).toBe("never");
+    expect(resolveRenderMode([{ visible: false, loop: "always" }], false)).toBe("never");
   });
 
   it("runs continuously when a visible scene asks for it", () => {
-    expect(resolveFrameloop([{ visible: true, loop: "always" }], false)).toBe("always");
+    expect(resolveRenderMode([{ visible: true, loop: "always" }], false)).toBe("always");
     expect(
-      resolveFrameloop(
+      resolveRenderMode(
         [
           { visible: true, loop: "demand" },
           { visible: true, loop: "always" },
@@ -98,9 +107,9 @@ describe("shared canvas: frameloop", () => {
   });
 
   it("renders on demand when every visible scene is static until invalidated", () => {
-    expect(resolveFrameloop([{ visible: true, loop: "demand" }], false)).toBe("demand");
+    expect(resolveRenderMode([{ visible: true, loop: "demand" }], false)).toBe("demand");
     expect(
-      resolveFrameloop(
+      resolveRenderMode(
         [
           { visible: false, loop: "always" },
           { visible: true, loop: "demand" },
@@ -111,7 +120,7 @@ describe("shared canvas: frameloop", () => {
   });
 
   it("drops to on-demand frames under reduced motion, whatever the scene asked for", () => {
-    expect(resolveFrameloop([{ visible: true, loop: "always" }], true)).toBe("demand");
-    expect(resolveFrameloop([{ visible: false, loop: "always" }], true)).toBe("never");
+    expect(resolveRenderMode([{ visible: true, loop: "always" }], true)).toBe("demand");
+    expect(resolveRenderMode([{ visible: false, loop: "always" }], true)).toBe("never");
   });
 });

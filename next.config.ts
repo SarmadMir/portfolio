@@ -2,9 +2,9 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
 
-// Next.js inlines its hydration payload as <script> tags, so script-src needs
-// 'unsafe-inline' on a statically prerendered page (nonces would force dynamic
-// rendering). Dev adds 'unsafe-eval' for Turbopack HMR.
+// Next.js inlines its hydration payload (and the theme bootstrap) as <script>
+// tags, so script-src needs 'unsafe-inline' on prerendered pages; nonces would
+// force dynamic rendering. Dev adds 'unsafe-eval' for Turbopack HMR.
 const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
@@ -30,7 +30,17 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
+  partialPrefetching: true,
   poweredByHeader: false,
+  turbopack: {
+    rules: {
+      "*.css": {
+        loaders: ["@tailwindcss/turbopack"],
+        as: "*.css",
+      },
+    },
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

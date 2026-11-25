@@ -1,14 +1,13 @@
-# sarmadmir.dev
+# sarmadmir.dev — v2
 
-Holding page for [sarmadmir.dev](https://sarmadmir.dev) while the full portfolio (V2) is built in a separate repo.
+The full portfolio, built on branch `v2`. `main` is the holding page that production serves until M1.
 
-- Next.js 16 (App Router), TypeScript, plain CSS, system font stack.
-- One route (`/`) plus a 404. Content lives in `src/config/site.ts`.
-- `main` auto-deploys to production on Vercel.
+The brief is `../command-center/PORTFOLIO_BRIEF.md` (workspace root). Its stack, budgets and process sections are binding.
 
 ```bash
 npm install
-npm run dev     # http://localhost:3000
+npm run dev        # http://localhost:3200 (pinned; never 3001)
 npm run build
+npm run typecheck  # after a build: route types live in .next/types
 npm run lint
 ```

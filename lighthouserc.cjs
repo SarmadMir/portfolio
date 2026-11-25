@@ -5,7 +5,9 @@
  *
  * Lighthouse's default run is the mobile one (Moto G class device, slow 4G,
  * 4x CPU), which is what the "mobile release gate" means. Each assertion uses
- * the median of three runs.
+ * the median of five runs. Five, because on GitHub's runner the first run is
+ * regularly the slow one (TBT 286 ms against 114 ms for the next two), and a
+ * median of three fails as soon as a second run is noisy.
  *
  * Throttling is applied ("devtools"), not simulated. On this page the
  * simulation put LCP anywhere from 0.76 s to 3.5 s for the same build, while
@@ -32,7 +34,7 @@ module.exports = {
       startServerReadyPattern: "Ready in",
       startServerReadyTimeout: 60_000,
       url: [`http://localhost:${PORT}/`],
-      numberOfRuns: 3,
+      numberOfRuns: 5,
       settings: { throttlingMethod: "devtools" }, // see the note on throttling above
     },
     assert: {
